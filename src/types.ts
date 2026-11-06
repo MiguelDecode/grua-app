@@ -49,3 +49,9 @@ export type NewTransferRequest = Pick<
   | "desired_date"
   | "notes"
 >;
+
+// A request together with the names of its dealerships (result of a joined query)
+export interface TransferRequestWithDealerships extends TransferRequest {
+  origin: { name: string } | null;
+  destination: { name: string } | null;
+}
