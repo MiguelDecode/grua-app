@@ -37,3 +37,15 @@ export interface TransferRequest {
   notes: string | null;
   created_at: string;
 }
+
+// Data needed to create a request (the rest is filled in by the database)
+export type NewTransferRequest = Pick<
+  TransferRequest,
+  | "vehicle_plate"
+  | "vehicle_vin"
+  | "origin_dealership_id"
+  | "destination_dealership_id"
+  | "requester_id"
+  | "desired_date"
+  | "notes"
+>;

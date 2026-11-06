@@ -10,7 +10,10 @@ interface NavItem {
 
 // Menu entries of each role (more will be added in later steps)
 const NAV_ITEMS: Record<Role, NavItem[]> = {
-  requester: [{ to: "/requester", label: "Mis solicitudes" }],
+  requester: [
+    { to: "/requester", label: "Mis solicitudes" },
+    { to: "/requester/new", label: "Nueva solicitud" },
+  ],
   driver: [{ to: "/driver", label: "Mis traslados" }],
   admin: [{ to: "/admin", label: "Panel de administración" }],
 };
@@ -29,7 +32,7 @@ function AppLayout() {
 
         <nav>
           {NAV_ITEMS[profile.role].map((item) => (
-            <NavLink key={item.to} to={item.to}>
+            <NavLink key={item.to} to={item.to} end>
               {item.label}
             </NavLink>
           ))}
