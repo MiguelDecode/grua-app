@@ -1,40 +1,47 @@
 import { useEffect, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
 import { supabase } from "./lib/supabase";
-import type { Dealership } from "./types";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
-  const [dealerships, setDealerships] = useState<Dealership[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function loadDealerships() {
-      const { data, error } = await supabase.from("dealerships").select("*");
+    // Get the current session when the app starts
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setIsLoading(false);
+    });
 
-      if (error) {
-        setErrorMessage(error.message);
-        return;
-      }
+    // Listen to login and logout events
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, newSession) => {
+        setSession(newSession);
+      },
+    );
 
-      setDealerships(data ?? []);
-    }
-
-    loadDealerships();
+    // Stop listening when the component disappears
+    return () => listener.subscription.unsubscribe();
   }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+  }
+
+  if (isLoading) {
+    return <p>Cargando...</p>;
+  }
+
+  if (!session) {
+    return <LoginPage />;
+  }
 
   return (
     <div>
       <h1>Gestión de grúas</h1>
-      <h2>Concesionarios (prueba de conexión)</h2>
-
-      {errorMessage && <p>Error al cargar los datos: {errorMessage}</p>}
-
-      <ul>
-        {dealerships.map((dealership) => (
-          <li key={dealership.id}>
-            {dealership.name} - {dealership.city}
-          </li>
-        ))}
-      </ul>
+      <p>Sesión iniciada como {session.user.email}</p>
+      <button onClick={handleLogout}>Cerrar sesión</button>
     </div>
   );
 }
