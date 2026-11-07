@@ -1,41 +1,72 @@
 import { useEffect, useState } from "react";
+import AssignDriverForm from "../components/AssignDriverForm";
 import { formatDate, formatTimestamp } from "../lib/format";
 import { STATUS_LABEL } from "../lib/requestStatus";
 import { supabase } from "../lib/supabase";
-import type { TransferRequestWithDetails } from "../types";
+import type { Profile, TransferRequestWithDetails } from "../types";
 
 function AdminHomePage() {
   const [requests, setRequests] = useState<TransferRequestWithDetails[]>([]);
+  const [drivers, setDrivers] = useState<Profile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadRequests() {
-      const { data, error } = await supabase
-        .from("transfer_requests")
-        .select(
-          `
-          *,
-          origin:dealerships!origin_dealership_id(name),
-          destination:dealerships!destination_dealership_id(name),
-          requester:profiles!requester_id(full_name),
-          driver:profiles!driver_id(full_name)
-        `,
-        )
-        .order("created_at", { ascending: false });
+    async function loadData() {
+      // Both requests are sent at the same time
+      const [requestsResult, driversResult] = await Promise.all([
+        supabase
+          .from("transfer_requests")
+          .select(
+            `
+            *,
+            origin:dealerships!origin_dealership_id(name),
+            destination:dealerships!destination_dealership_id(name),
+            requester:profiles!requester_id(full_name),
+            driver:profiles!driver_id(full_name)
+          `,
+          )
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("profiles")
+          .select("*")
+          .eq("role", "driver")
+          .order("full_name"),
+      ]);
 
-      if (error) {
-        console.error(error.message);
-        setErrorMessage("No se han podido cargar las solicitudes.");
+      if (requestsResult.error || driversResult.error) {
+        console.error(
+          requestsResult.error?.message ?? driversResult.error?.message,
+        );
+        setErrorMessage("No se han podido cargar los datos.");
       } else {
-        setRequests((data ?? []) as TransferRequestWithDetails[]);
+        setRequests(
+          (requestsResult.data ?? []) as TransferRequestWithDetails[],
+        );
+        setDrivers((driversResult.data ?? []) as Profile[]);
       }
 
       setIsLoading(false);
     }
 
-    loadRequests();
+    loadData();
   }, []);
+
+  // Updates the list on screen after a driver has been assigned
+  function handleAssigned(requestId: number, driver: Profile) {
+    setRequests((current) =>
+      current.map((request): TransferRequestWithDetails =>
+        request.id === requestId
+          ? {
+              ...request,
+              driver_id: driver.id,
+              status: "assigned",
+              driver: { full_name: driver.full_name },
+            }
+          : request,
+      ),
+    );
+  }
 
   if (isLoading) {
     return <p>Cargando solicitudes...</p>;
@@ -65,6 +96,7 @@ function AdminHomePage() {
                 <th>Fecha deseada</th>
                 <th>Estado</th>
                 <th>Creada el</th>
+                <th>Asignar gruista</th>
               </tr>
             </thead>
             <tbody>
@@ -78,6 +110,18 @@ function AdminHomePage() {
                   <td>{formatDate(request.desired_date)}</td>
                   <td>{STATUS_LABEL[request.status]}</td>
                   <td>{formatTimestamp(request.created_at)}</td>
+                  <td>
+                    {request.status === "pending" ||
+                    request.status === "assigned" ? (
+                      <AssignDriverForm
+                        request={request}
+                        drivers={drivers}
+                        onAssigned={handleAssigned}
+                      />
+                    ) : (
+                      "-"
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
