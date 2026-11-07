@@ -55,3 +55,9 @@ export interface TransferRequestWithDealerships extends TransferRequest {
   origin: { name: string } | null;
   destination: { name: string } | null;
 }
+
+// A request with dealership names plus the names of the requester and the driver
+export interface TransferRequestWithDetails extends TransferRequestWithDealerships {
+  requester: { full_name: string } | null;
+  driver: { full_name: string } | null;
+}
