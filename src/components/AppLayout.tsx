@@ -15,7 +15,10 @@ const NAV_ITEMS: Record<Role, NavItem[]> = {
     { to: "/requester/new", label: "Nueva solicitud" },
   ],
   driver: [{ to: "/driver", label: "Mis traslados" }],
-  admin: [{ to: "/admin", label: "Panel de administración" }],
+  admin: [
+    { to: "/admin", label: "Solicitudes" },
+    { to: "/admin/dealerships", label: "Concesionarios" },
+  ],
 };
 
 function AppLayout() {

@@ -8,6 +8,7 @@ import DriverHomePage from "./pages/DriverHomePage";
 import LoginPage from "./pages/LoginPage";
 import RequesterHomePage from "./pages/RequesterHomePage";
 import NewRequestPage from "./pages/NewRequestPage";
+import AdminDealershipsPage from "./pages/AdminDealershipsPage";
 
 // Shows the login page, or skips it if the user is already logged in
 function LoginRoute() {
@@ -56,6 +57,10 @@ function App() {
 
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
             <Route path="/admin" element={<AdminHomePage />} />
+            <Route
+              path="/admin/dealerships"
+              element={<AdminDealershipsPage />}
+            />
           </Route>
         </Route>
       </Route>
