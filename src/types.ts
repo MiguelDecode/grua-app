@@ -18,6 +18,7 @@ export interface Dealership {
 export interface Profile {
   id: string;
   full_name: string;
+  email: string | null;
   role: Role;
   dealership_id: number | null;
   created_at: string;

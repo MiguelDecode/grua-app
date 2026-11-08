@@ -18,6 +18,7 @@ const NAV_ITEMS: Record<Role, NavItem[]> = {
   admin: [
     { to: "/admin", label: "Solicitudes" },
     { to: "/admin/dealerships", label: "Concesionarios" },
+    { to: "/admin/users", label: "Usuarios" },
   ],
 };
 

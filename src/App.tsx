@@ -9,6 +9,7 @@ import LoginPage from "./pages/LoginPage";
 import RequesterHomePage from "./pages/RequesterHomePage";
 import NewRequestPage from "./pages/NewRequestPage";
 import AdminDealershipsPage from "./pages/AdminDealershipsPage";
+import AdminUsersPage from "./pages/AdminUsersPage";
 
 // Shows the login page, or skips it if the user is already logged in
 function LoginRoute() {
@@ -61,6 +62,7 @@ function App() {
               path="/admin/dealerships"
               element={<AdminDealershipsPage />}
             />
+            <Route path="/admin/users" element={<AdminUsersPage />} />
           </Route>
         </Route>
       </Route>
