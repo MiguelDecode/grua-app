@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import DriverRequestsTable from "../components/DriverRequestsTable";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
-import type { TransferRequestWithDetails } from "../types";
+import type { RequestStatus, TransferRequestWithDetails } from "../types";
 
 function DriverHomePage() {
   const { profile } = useAuth();
   const [requests, setRequests] = useState<TransferRequestWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
 
   const userId = profile?.id;
 
@@ -44,6 +46,36 @@ function DriverHomePage() {
     loadRequests(userId);
   }, [userId]);
 
+  async function handleStatusChange(
+    requestId: number,
+    newStatus: RequestStatus,
+  ) {
+    setActionError(null);
+    setUpdatingId(requestId);
+
+    const { error } = await supabase
+      .from("transfer_requests")
+      .update({ status: newStatus })
+      .eq("id", requestId);
+
+    setUpdatingId(null);
+
+    if (error) {
+      console.error(error.message);
+      setActionError(
+        "No se ha podido actualizar el estado. Inténtalo de nuevo.",
+      );
+      return;
+    }
+
+    // Update the list on screen
+    setRequests((current) =>
+      current.map((request): TransferRequestWithDetails =>
+        request.id === requestId ? { ...request, status: newStatus } : request,
+      ),
+    );
+  }
+
   if (isLoading) {
     return <p>Cargando traslados...</p>;
   }
@@ -62,6 +94,7 @@ function DriverHomePage() {
       <h1>Mis traslados</h1>
 
       {errorMessage && <p>{errorMessage}</p>}
+      {actionError && <p>{actionError}</p>}
 
       {!errorMessage && (
         <>
@@ -69,14 +102,22 @@ function DriverHomePage() {
           {activeRequests.length === 0 ? (
             <p>No tienes traslados pendientes.</p>
           ) : (
-            <DriverRequestsTable requests={activeRequests} />
+            <DriverRequestsTable
+              requests={activeRequests}
+              updatingId={updatingId}
+              onStatusChange={handleStatusChange}
+            />
           )}
 
           <h2>Historial</h2>
           {finishedRequests.length === 0 ? (
             <p>Todavía no has completado ningún traslado.</p>
           ) : (
-            <DriverRequestsTable requests={finishedRequests} />
+            <DriverRequestsTable
+              requests={finishedRequests}
+              updatingId={updatingId}
+              onStatusChange={handleStatusChange}
+            />
           )}
         </>
       )}
