@@ -82,7 +82,13 @@ function AdminDealershipsPage() {
 
     if (error) {
       console.error(error.message);
-      setErrorMessage("No se ha podido guardar el concesionario.");
+
+      // 23505 is the database code for "this value already exists"
+      setErrorMessage(
+        error.code === "23505"
+          ? "Ya existe un concesionario con ese nombre."
+          : "No se ha podido guardar el concesionario.",
+      );
       return;
     }
 
