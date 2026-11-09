@@ -128,7 +128,7 @@ function AdminUsersPage() {
     <div>
       <h1>Usuarios</h1>
 
-      {errorMessage && <p>{errorMessage}</p>}
+      {errorMessage && <p className="error" role="alert">{errorMessage}</p>}
 
       {editingUser && (
         <form onSubmit={handleSubmit}>

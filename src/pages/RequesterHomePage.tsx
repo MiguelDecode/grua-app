@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { formatDate, formatTimestamp } from "../lib/format";
-import { STATUS_LABEL } from "../lib/requestStatus";
 import { supabase } from "../lib/supabase";
 import type { TransferRequestWithDealerships } from "../types";
+import StatusBadge from "../components/StatusBadge";
 
 function RequesterHomePage() {
   const { profile } = useAuth();
@@ -53,7 +53,11 @@ function RequesterHomePage() {
     <div>
       <h1>Mis solicitudes</h1>
 
-      {errorMessage && <p>{errorMessage}</p>}
+      {errorMessage && (
+        <p className="error" role="alert">
+          {errorMessage}
+        </p>
+      )}
 
       {!errorMessage && requests.length === 0 && (
         <p>
@@ -81,7 +85,7 @@ function RequesterHomePage() {
                 <td>{request.origin?.name}</td>
                 <td>{request.destination?.name}</td>
                 <td>{formatDate(request.desired_date)}</td>
-                <td>{STATUS_LABEL[request.status]}</td>
+                <td>{<StatusBadge status={request.status} />}</td>
                 <td>{formatTimestamp(request.created_at)}</td>
               </tr>
             ))}

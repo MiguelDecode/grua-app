@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import AssignDriverForm from "../components/AssignDriverForm";
 import { formatDate, formatTimestamp } from "../lib/format";
-import { STATUS_LABEL } from "../lib/requestStatus";
 import { supabase } from "../lib/supabase";
 import type { Profile, TransferRequestWithDetails } from "../types";
+import StatusBadge from "../components/StatusBadge";
 
 function AdminHomePage() {
   const [requests, setRequests] = useState<TransferRequestWithDetails[]>([]);
@@ -77,7 +77,11 @@ function AdminHomePage() {
       <h1>Panel de administración</h1>
       <h2>Todas las solicitudes</h2>
 
-      {errorMessage && <p>{errorMessage}</p>}
+      {errorMessage && (
+        <p className="error" role="alert">
+          {errorMessage}
+        </p>
+      )}
 
       {!errorMessage && requests.length === 0 && (
         <p>Todavía no hay ninguna solicitud.</p>
@@ -108,7 +112,9 @@ function AdminHomePage() {
                   <td>{request.requester?.full_name}</td>
                   <td>{request.driver?.full_name ?? "Sin asignar"}</td>
                   <td>{formatDate(request.desired_date)}</td>
-                  <td>{STATUS_LABEL[request.status]}</td>
+                  <td>
+                    <StatusBadge status={request.status} />
+                  </td>
                   <td>{formatTimestamp(request.created_at)}</td>
                   <td>
                     {request.status === "pending" ||

@@ -93,8 +93,8 @@ function DriverHomePage() {
     <div>
       <h1>Mis traslados</h1>
 
-      {errorMessage && <p>{errorMessage}</p>}
-      {actionError && <p>{actionError}</p>}
+      {errorMessage && <p className="error" role="alert">{errorMessage}</p>}
+      {actionError && <p className="error" role="alert">{actionError}</p>}
 
       {!errorMessage && (
         <>

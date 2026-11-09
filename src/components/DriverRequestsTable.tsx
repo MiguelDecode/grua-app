@@ -1,6 +1,7 @@
 import { formatDate } from "../lib/format";
-import { DRIVER_NEXT_ACTION, STATUS_LABEL } from "../lib/requestStatus";
+import { DRIVER_NEXT_ACTION } from "../lib/requestStatus";
 import type { RequestStatus, TransferRequestWithDetails } from "../types";
+import StatusBadge from "./StatusBadge";
 
 interface DriverRequestsTableProps {
   requests: TransferRequestWithDetails[];
@@ -55,7 +56,9 @@ function DriverRequestsTable({
                 <td>{request.requester?.full_name}</td>
                 <td>{formatDate(request.desired_date)}</td>
                 <td>{request.notes ?? "-"}</td>
-                <td>{STATUS_LABEL[request.status]}</td>
+                <td>
+                  <StatusBadge status={request.status} />
+                </td>
                 <td>
                   {action ? (
                     <button

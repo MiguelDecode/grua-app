@@ -184,8 +184,8 @@ function NewRequestPage() {
           />
         </div>
 
-        {errorMessage && <p>{errorMessage}</p>}
-        {successMessage && <p>{successMessage}</p>}
+        {errorMessage && <p className="error" role="alert">{errorMessage}</p>}
+        {successMessage && <p className="success" role="status">{successMessage}</p>}
 
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Enviando..." : "Enviar solicitud"}

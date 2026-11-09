@@ -147,7 +147,7 @@ function AdminDealershipsPage() {
           />
         </div>
 
-        {errorMessage && <p>{errorMessage}</p>}
+        {errorMessage && <p className="error" role="alert">{errorMessage}</p>}
 
         <button type="submit" disabled={isSaving}>
           {isSaving

@@ -28,7 +28,7 @@ function LoginPage() {
   }
 
   return (
-    <div>
+    <div className="login-page">
       <h1>Iniciar sesión</h1>
 
       <form onSubmit={handleSubmit}>
@@ -54,7 +54,11 @@ function LoginPage() {
           />
         </div>
 
-        {errorMessage && <p>{errorMessage}</p>}
+        {errorMessage && (
+          <p className="error" role="alert">
+            {errorMessage}
+          </p>
+        )}
 
         <button type="submit" disabled={isLoading}>
           {isLoading ? "Entrando..." : "Entrar"}

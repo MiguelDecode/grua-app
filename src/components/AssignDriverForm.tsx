@@ -70,7 +70,7 @@ function AssignDriverForm({
             : "Asignar"}
       </button>
 
-      {errorMessage && <p>{errorMessage}</p>}
+      {errorMessage && <p className="error" role="alert">{errorMessage}</p>}
     </div>
   );
 }
